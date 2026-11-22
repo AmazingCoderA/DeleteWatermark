@@ -65,8 +65,7 @@ jobs:
       - name: Install cargo-ndk
         run: cargo install cargo-ndk --locked
       - name: Build
-        env:
-          ANDROID_NDK_HOME: ${{ env.ANDROID_NDK_HOME || env.ANDROID_NDK_LATEST_HOME }}
+        # GitHub runners expose ANDROID_NDK_ROOT; cargo-ndk detects it automatically.
         run: |
           cargo ndk --android-platform 24 -t arm64-v8a -t armeabi-v7a -o dist/android/libs \
             build --release --no-default-features --bin delete-watermark
