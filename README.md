@@ -2,7 +2,7 @@
 
 # 🎨 Delete Watermark v8.0
 
-**Rust port of `DeleteGdzSuper6.py` — precise watermark removal for Windows, Linux, macOS and Android**
+**Rust port of `DeleteSuper6.py` — precise watermark removal for Windows, Linux, macOS and Android**
 
 [![autobuild](https://github.com/AmazingCoderA/DeleteWatermark/actions/workflows/build.yml/badge.svg)](https://github.com/AmazingCoderA/DeleteWatermark/actions/workflows/build.yml)
 [![Release](https://img.shields.io/github/v/release/AmazingCoderA/DeleteWatermark)](https://github.com/AmazingCoderA/DeleteWatermark/releases)
