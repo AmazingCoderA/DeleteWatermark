@@ -160,9 +160,9 @@ pub fn otsu_ink_mask(gray: &GrayF32) -> Vec<u8> {
     // Порог от фона захватывает и полупрозрачные сглаженные края букв,
     // чтобы после инпейнтинга не оставалось серого ореола.
     let edge = if ink_is_dark {
-        (bg - 30.0).max(thr as f64 + 15.0).clamp(0.0, 255.0) as f32
+        (bg - 8.0).max(thr as f64 + 15.0).clamp(0.0, 255.0) as f32
     } else {
-        (bg + 30.0).min(thr as f64 - 15.0).clamp(0.0, 255.0) as f32
+        (bg + 8.0).min(thr as f64 - 15.0).clamp(0.0, 255.0) as f32
     };
     let mut raw = vec![0u8; w * h];
     for (i, &v) in gray.as_raw().iter().enumerate() {
@@ -184,7 +184,8 @@ pub fn otsu_ink_mask(gray: &GrayF32) -> Vec<u8> {
             };
         }
     }
-    dilate3(&raw, w, h)
+    // Две итерации: core-глиф + 2 px на сглаженные края (антиалиасинг).
+    dilate3(&dilate3(&raw, w, h), w, h)
 }
 
 /// Дилатация маски квадратом 3x3 (эквивалент cv2.dilate с MORPH_RECT 3x3).
@@ -287,6 +288,9 @@ pub fn inpaint_telea(src: &RgbImage, mask: &[u8], radius: i32) -> RgbImage {
         let cx = idx % w;
         let cy = idx / w;
         let mut sw_sum = [0f32; 3];
+        let mut plain_sum = [0f32; 3];
+        let mut flat_min = [255f32; 3];
+        let mut flat_max = [0f32; 3];
         let mut w_sum = 0f32;
 
         let r = radius.clamp(1, 9);
@@ -332,7 +336,11 @@ pub fn inpaint_telea(src: &RgbImage, mask: &[u8], radius: i32) -> RgbImage {
 
                 let weight = w_geo * w_dst * w_dir;
                 for c in 0..3 {
-                    let predicted = color[ni][c] + grad[c][0] * dx as f32 + grad[c][1] * dy as f32;
+                    let v = color[ni][c];
+                    flat_min[c] = flat_min[c].min(v);
+                    flat_max[c] = flat_max[c].max(v);
+                    plain_sum[c] += weight * v;
+                    let predicted = v + grad[c][0] * dx as f32 + grad[c][1] * dy as f32;
                     sw_sum[c] += weight * predicted;
                 }
                 w_sum += weight;
@@ -340,8 +348,12 @@ pub fn inpaint_telea(src: &RgbImage, mask: &[u8], radius: i32) -> RgbImage {
         }
 
         if w_sum > 1e-9 {
+            // На однотонном фоне градиентная экстраполяция даёт лёгкий
+            // серый ореол — используем простое среднее соседей.
+            let flat = (0..3).all(|c| flat_max[c] - flat_min[c] < 3.0);
             for c in 0..3 {
-                color[idx][c] = (sw_sum[c] / w_sum).clamp(0.0, 255.0);
+                let v = if flat { plain_sum[c] } else { sw_sum[c] } / w_sum;
+                color[idx][c] = v.clamp(0.0, 255.0);
             }
         }
         known[idx] = true;
