@@ -67,7 +67,7 @@ jobs:
       - name: Build
         # GitHub runners expose ANDROID_NDK_ROOT; cargo-ndk detects it automatically.
         run: |
-          cargo ndk --android-platform 24 -t arm64-v8a -t armeabi-v7a -o dist/android/libs \
+          cargo ndk -t arm64-v8a -t armeabi-v7a -o dist/android/libs \
             build --release --no-default-features --bin delete-watermark
           mkdir -p dist/android/assets
           cp -R assets/. dist/android/assets/

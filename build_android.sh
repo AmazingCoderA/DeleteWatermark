@@ -17,7 +17,7 @@ cp -R assets/. dist/android/assets/
 
 for abi in "${TARGETS[@]}"; do
     echo "[*] Building for $abi ..."
-    cargo ndk --android-platform 24 -t "$abi" -o dist/android/libs \
+    cargo ndk -t "$abi" -o dist/android/libs \
         build --release --no-default-features --bin delete-watermark
 done
 
