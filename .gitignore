@@ -4,5 +4,7 @@
 /web_temp_cleaned/
 /tests_tmp/
 /build_apk/
+/apk_download/
+*.apk
 *.log
 .DS_Store
