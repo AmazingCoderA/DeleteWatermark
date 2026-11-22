@@ -27,6 +27,11 @@ rfd = { version = "0.15", optional = true }
 default = ["gui"]
 gui = ["dep:eframe", "dep:egui", "dep:rfd"]
 
+[lib]
+name = "delete_watermark_android"
+crate-type = ["cdylib"]
+path = "src/lib.rs"
+
 [profile.release]
 opt-level = 3
 lto = "thin"
