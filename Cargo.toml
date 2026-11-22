@@ -1,0 +1,35 @@
+[package]
+name = "delete-watermark"
+version = "8.0.0"
+edition = "2021"
+description = "Умный удалитель водяных знаков: порт DeleteGdzSuper6.py на Rust (CLI / Web / GUI)"
+authors = ["Lev"]
+readme = "README.md"
+license = "MIT"
+
+[dependencies]
+anyhow = "1"
+base64 = "0.22"
+clap = { version = "4", features = ["derive"] }
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "bmp", "tiff"] }
+num-complex = "0.4"
+rayon = "1"
+rustfft = "6"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[target.'cfg(not(target_os = "android"))'.dependencies]
+eframe = { version = "0.31", optional = true }
+egui = { version = "0.31", optional = true }
+rfd = { version = "0.15", optional = true }
+
+[features]
+default = ["gui"]
+gui = ["dep:eframe", "dep:egui", "dep:rfd"]
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+panic = "abort"
+strip = true

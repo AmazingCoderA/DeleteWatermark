@@ -1,0 +1,97 @@
+name: autobuild
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*' ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  desktop:
+    name: Build ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            name: windows-x86_64
+            bin: delete-watermark.exe
+            archive: zip
+          - os: ubuntu-latest
+            name: linux-x86_64
+            bin: delete-watermark
+            archive: tar.gz
+          - os: macos-latest
+            name: macos-arm64
+            bin: delete-watermark
+            archive: tar.gz
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build (headless CLI + Web)
+        run: cargo build --release --no-default-features
+      - name: Prepare dist
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp target/release/${{ matrix.bin }} dist/
+          cp -R assets dist/
+          cp README.md dist/
+      - name: Pack ZIP (Windows)
+        if: matrix.archive == 'zip'
+        shell: pwsh
+        run: Compress-Archive -Path dist\* -DestinationPath delete-watermark-v8.0-${{ matrix.name }}.zip
+      - name: Pack TAR.GZ (Unix)
+        if: matrix.archive == 'tar.gz'
+        run: tar -czf delete-watermark-v8.0-${{ matrix.name }}.tar.gz -C dist .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}
+          path: delete-watermark-v8.0-${{ matrix.name }}.*
+
+  android:
+    name: Build Android (arm64 + armv7)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi
+      - name: Install cargo-ndk
+        run: cargo install cargo-ndk --locked
+      - name: Build
+        env:
+          ANDROID_NDK_HOME: ${{ env.ANDROID_NDK_HOME || env.ANDROID_NDK_LATEST_HOME }}
+        run: |
+          cargo ndk --android-platform 24 -t arm64-v8a -t armeabi-v7a -o dist/android/libs \
+            build --release --no-default-features --bin delete-watermark
+          mkdir -p dist/android/assets
+          cp -R assets/. dist/android/assets/
+          cp target/aarch64-linux-android/release/delete-watermark dist/android/delete-watermark-arm64 || true
+          cp target/armv7-linux-androideabi/release/delete-watermark dist/android/delete-watermark-armv7 || true
+      - name: Pack
+        run: tar -czf delete-watermark-v8.0-android.tar.gz -C dist android
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: delete-watermark-v8.0-android.tar.gz
+
+  release:
+    name: Publish release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [ desktop, android ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*
+          generate_release_notes: true

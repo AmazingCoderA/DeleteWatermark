@@ -1,0 +1,7 @@
+/target/
+/dist/
+/web_temp_uploads/
+/web_temp_cleaned/
+/tests_tmp/
+*.log
+.DS_Store
