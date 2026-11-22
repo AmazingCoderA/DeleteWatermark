@@ -18,7 +18,7 @@ cp -R assets/. dist/android/assets/
 for abi in "${TARGETS[@]}"; do
     echo "[*] Building for $abi ..."
     cargo ndk -t "$abi" -o dist/android/libs \
-        build --release --no-default-features --bin delete-watermark
+        build --release --no-default-features
 done
 
 # cargo-ndk копирует cdylib в dist/android/libs; бинарники берём из target/.
