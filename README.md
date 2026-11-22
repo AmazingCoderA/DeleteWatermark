@@ -134,6 +134,19 @@ delete-watermark-web        # веб-интерфейс на http://127.0.0.1:50
 
 GUI на Android не поддерживается — используйте `--mode web` (откройте страницу в браузере устройства) или `--mode cli`.
 
+### APK (готовое приложение для Android)
+
+В релизе лежит `delete-watermark-v8.0.apk` — установимое приложение: внутри WebView
+открывается тот же интерфейс, а движок работает как встроенный Rust-веб-сервер.
+База образцов из `assets/GDZ_SAMPLES/` копируется в хранилище приложения при первом запуске.
+
+Собрать самому (нужны Android SDK с NDK и JDK; на CI уже есть):
+
+```bash
+bash android/build_apk.sh
+# результат: build_apk/delete-watermark.apk
+```
+
 ### GitHub Actions
 `.github/workflows/build.yml` собирает Windows / Linux / macOS и Android-артефакты при каждом push и публикует их в Release при теге `v*`.
 

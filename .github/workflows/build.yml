@@ -75,10 +75,14 @@ jobs:
           cp target/armv7-linux-androideabi/release/delete-watermark dist/android/delete-watermark-armv7 || true
       - name: Pack
         run: tar -czf delete-watermark-v8.0-android.tar.gz -C dist android
+      - name: Build APK
+        run: bash android/build_apk.sh
       - uses: actions/upload-artifact@v4
         with:
           name: android
-          path: delete-watermark-v8.0-android.tar.gz
+          path: |
+            delete-watermark-v8.0-android.tar.gz
+            build_apk/delete-watermark.apk
 
   release:
     name: Publish release

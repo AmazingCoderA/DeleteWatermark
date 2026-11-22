@@ -3,5 +3,6 @@
 /web_temp_uploads/
 /web_temp_cleaned/
 /tests_tmp/
+/build_apk/
 *.log
 .DS_Store

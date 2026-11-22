@@ -1,7 +1,7 @@
 //! Десктопный GUI (egui/eframe) — аналог CustomTkinter-интерфейса из Python.
 
-use crate::config::{is_supported, EngineConfig};
-use crate::engine::WatermarkRemover;
+use delete_watermark_android::config::{is_supported, EngineConfig};
+use delete_watermark_android::engine::WatermarkRemover;
 use anyhow::Result;
 use eframe::egui;
 use rfd::{FileDialog, MessageDialog};

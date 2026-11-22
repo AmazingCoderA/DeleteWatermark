@@ -3,17 +3,12 @@
 //! Режимы: cli (пакетная обработка), web (HTTP-сервер для локальной сети),
 //! gui (десктопное окно; кроме Android).
 
-mod config;
-mod engine;
-mod image_ops;
-mod matcher;
-mod web;
-
 #[cfg(all(not(target_os = "android"), feature = "gui"))]
 mod gui;
 
 use anyhow::{anyhow, Result};
 use clap::Parser;
+use delete_watermark_android::{config, engine, web};
 use config::{is_supported, resolve_samples_dir, EngineConfig};
 use engine::WatermarkRemover;
 use std::fs;
