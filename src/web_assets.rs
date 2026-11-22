@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+//! Встроенная веб-страница: лежит прямо в бинарнике, без внешних файлов.
+pub const INDEX_HTML: &str = r##"<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -149,3 +150,4 @@
     </script>
 </body>
 </html>
+"##;

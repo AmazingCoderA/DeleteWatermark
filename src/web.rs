@@ -13,9 +13,9 @@ use std::sync::Arc;
 use std::thread;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use crate::engine;
+use crate::{engine, web_assets};
 
-const HTML: &str = include_str!("../assets/web/index.html");
+const HTML: &str = web_assets::INDEX_HTML;
 const MAX_BODY: usize = 100 * 1024 * 1024; // 100MB, как MAX_CONTENT_LENGTH
 
 fn find_subslice(haystack: &[u8], needle: &[u8]) -> Option<usize> {

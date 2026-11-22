@@ -5,6 +5,7 @@ pub mod engine;
 pub mod image_ops;
 pub mod matcher;
 pub mod web;
+pub mod web_assets;
 
 use jni::objects::{JClass, JString};
 use jni::sys::jint;

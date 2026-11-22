@@ -41,7 +41,8 @@ jobs:
           mkdir -p dist
           cp target/release/${{ matrix.bin }} dist/
           cp -R assets dist/
-          cp README.md dist/
+          cp README.md README_RU.md dist/
+          cp -R docs dist/
       - name: Pack ZIP (Windows)
         if: matrix.archive == 'zip'
         shell: pwsh

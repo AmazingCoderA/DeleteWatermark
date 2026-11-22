@@ -25,11 +25,13 @@ mkdir -p dist
 cp -f target/release/delete-watermark dist/
 rm -rf dist/assets
 cp -R assets dist/
-cp -f README.md dist/
+cp -f README.md README_RU.md dist/
+rm -rf dist/docs
+cp -R docs dist/
 
 echo "[3/3] Packing archive..."
 ARCHIVE="delete-watermark-v8.0-$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m).tar.gz"
-tar -czf "dist/${ARCHIVE}" -C dist delete-watermark assets README.md
+tar -czf "dist/${ARCHIVE}" -C dist delete-watermark assets README.md README_RU.md docs
 
 echo ""
 echo "[OK] Done: dist/${ARCHIVE}"
